@@ -41,7 +41,11 @@ declare module 'discord.js' {
         updateMessage(message: Message, content: StringResolvable, options?: { tts: boolean }, callback?: (error: Error, message: Message) => void): Promise<Message>;
         deleteMessage(message: Message, options?: { wait: number }, callback?: (error: Error) => void): Promise<void>;
         deleteMessages(messages: Message[], callback?: (error: Error) => void): Promise<void>;
-        getChannelLogs(channel: Channel, limit: number, options?: { before: Message, after: Message }, callback?: (error: Error, messages: Message[]) => void): Promise<Message[]>;
+        getChannelLogs(channel: ChannelResolvable, limit: number, options?: { before: Message, after: Message, around: Message }, callback?: (error: Error, messages: Message[]) => void): Promise<Message[]>;
+        getMessage(channel: ChannelResolvable, messageID: string, callback?: (error: Error, message: Message) => void): Promise<Message>;
+        pinMessage(message: Message, callback?: (error: Error) => void): Promise<void>;
+        unpinMessage(message: Message, callback?: (error: Error) => void): Promise<void>;
+        getPinnedMessages(channel: ChannelResolvable, callback?: (error: Error, messages: Message[]) => void): Promise<Message[]>;
         getBans(server: Server, callback?: (error: Error, users: User[]) => void): Promise<User[]>;
         joinServer(invite: InviteIDResolvable, callback?: (error: Error, server: Server) => void): Promise<Server>;
         createServer(name: string, region: AvailableRegions, callback?: (error: Error, server: Server) => void): Promise<Server>;
@@ -96,6 +100,7 @@ declare module 'discord.js' {
         deafenMember(user: UserResolvable, server: ServerResolvable, callback?: (error: Error) => void): Promise<void>;
         undeafenMember(user: UserResolvable, server: ServerResolvable, callback?: (error: Error) => void): Promise<void>;
         setNickname(server: ServerResolvable, nickname: string, user?: UserResolvable, callback?: (error: Error) => void): Promise<void>;
+        setNote(user: UserResolvable, note: string, callback?: (error: Error) => void): Promise<void>;
         
         // Events
         on(event: 'ready', listener: Function): this;
@@ -233,6 +238,7 @@ declare module 'discord.js' {
         bot: boolean;
         voiceChannel: VoiceChannel;
         createdAt: Date;
+        note: string
         
         mention(): string;
         sendMessage(content?: StringResolvable, options?: { tts?: boolean, file?: { file: FileResolvable, name?: string, disableEveryone?: boolean } }, callback?: (error: Error, message: Message) => void): Promise<Message>;
@@ -242,6 +248,7 @@ declare module 'discord.js' {
         stopTyping(callback?: (error: Error) => void): Promise<void>;
         addTo(role: RoleResolvable | RoleResolvable[], callback?: (error: Error) => void): Promise<void>;
         getChannelLogs(limit: number, options?: { before: Message, after: Message }, callback?: (error: Error, messages: Message[]) => void): Promise<Message[]>;
+        getMessage(messageID: string, callback?: (error: Error, message: Message) => void): Promise<Message>;
         hasRole(role: RoleResolvable | RoleResolvable[]): boolean;
 }
     export class Channel extends Equality {
@@ -276,6 +283,7 @@ declare module 'discord.js' {
         sendTTS(content: StringResolvable, callback?: (error: Error, message: Message) => void): Promise<Message>;
         sendFile(attachment: FileResolvable, name?: string, content?: string, callback?: (error: Error, message: Message) => void): Promise<Message>;
         getLogs(limit: number, options?: { before: Message, after: Message }, callback?: (error: Error, messages: Message[]) => void): Promise<Message[]>;
+        getMessage(messageID: string, callback?: (error: Error, message: Message) => void): Promise<Message>;
         startTyping(callback?: (error: Error) => void): Promise<void>;
         stopTyping(callback?: (error: Error) => void): Promise<void>;
     }
@@ -288,6 +296,7 @@ declare module 'discord.js' {
         sendTTS(content: StringResolvable, callback?: (error: Error, message: Message) => void): Promise<Message>;
         sendFile(attachment: FileResolvable, name?: string, content?: string, callback?: (error: Error, message: Message) => void): Promise<Message>;
         getLogs(limit: number, options?: { before: Message, after: Message }, callback?: (error: Error, messages: Message[]) => void): Promise<Message[]>;
+        getMessage(messageID: string, callback?: (error: Error, message: Message) => void): Promise<Message>;
         startTyping(callback?: (error: Error) => void): Promise<void>;
         stopTyping(callback?: (error: Error) => void): Promise<void>;
     }
@@ -357,12 +366,15 @@ declare module 'discord.js' {
         content: string;
         cleanContent: string;
         mentions: User[];
+        pinned: boolean;
         
         isMentioned(user: User): boolean;
         delete(options?: { wait: number }, callback?: (error: Error) => void): Promise<void>;
         update(content: StringResolvable, options?: { tts: boolean }, callback?: (error: Error, message: Message) => void): Promise<Message>;
         reply(content?: StringResolvable, options?: { tts: boolean }, callback?: (error: Error, message: Message) => void): Promise<Message>;
         replyTTS(content?: StringResolvable, callback?: (error: Error, message: Message) => void): Promise<Message>;
+        pin(callback?: (error: Error) => void): Promise<void>;
+        unpin(callback?: (error: Error) => void): Promise<void>;
     }
     export class Invite {
         maxAge: number;
